@@ -23,10 +23,10 @@ export const handler: Handler = apiHandler(async (event, context) => {
   ];
 
   return createResponse(
-    201,
+    200,
     {
       data: mockTodo[0],
-      message: 'delte success',
+      message: 'update success',
     },
     event,
   );

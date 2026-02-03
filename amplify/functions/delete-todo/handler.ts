@@ -10,7 +10,7 @@ export const handler: Handler = apiHandler(async (event, context) => {
   console.log('event', event);
 
   return createResponse(
-    201,
+    200,
     {
       messgae: 'todo deleted',
     },
