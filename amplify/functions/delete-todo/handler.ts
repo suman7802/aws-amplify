@@ -9,10 +9,9 @@ export const handler: Handler = apiHandler(async (event, context) => {
   console.log('context', context);
   console.log('event', event);
 
-  createResponse(
+  return createResponse(
     201,
     {
-      evnet: event,
       messgae: 'todo deleted',
     },
     event,

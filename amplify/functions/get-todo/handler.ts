@@ -22,5 +22,5 @@ export const handler: Handler = apiHandler(async (event, context) => {
     },
   ];
 
-  createResponse(201, mockTodo, event);
+  return createResponse(201, mockTodo, event);
 });

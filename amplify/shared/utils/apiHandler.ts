@@ -58,7 +58,7 @@ export const apiHandler = <T>(
   ): Promise<APIGatewayProxyResult> => {
     try {
       const data = await handler(event, context);
-      return createResponse(200, { data }, event);
+      return data as APIGatewayProxyResult;
     } catch (err) {
       return handleError(err, event);
     }

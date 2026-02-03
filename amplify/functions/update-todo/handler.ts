@@ -22,7 +22,7 @@ export const handler: Handler = apiHandler(async (event, context) => {
     },
   ];
 
-  createResponse(
+  return createResponse(
     201,
     {
       data: mockTodo[0],
