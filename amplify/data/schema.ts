@@ -4,7 +4,7 @@ export const todoSchema = a.schema({
   Todo: a
     .model({
       id: a.id(),
-      userId: a.id(),
+      userId: a.id().required(),
       title: a.string().required(),
       content: a.string().required(),
       status: a.enum(['pending', 'progress', 'completed']),

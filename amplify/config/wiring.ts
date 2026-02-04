@@ -11,8 +11,12 @@ export function wiring(backend: AppBackend) {
   /**
    * sync the env
    */
-  backend.generateUploadUrl.addEnvironment(
-    'MEDIA_BUCKET',
-    backend.storage.resources.bucket.bucketName,
-  );
+  backend.generateUploadUrl.addEnvironment('MEDIA_BUCKET', backend.storage.resources.bucket.bucketName);
+
+  const crudLambdas = [backend.createTodo, backend.updateTodo, backend.deleteTodo, backend.getTodo];
+
+  // add env to all lambdas that need to call db
+  crudLambdas.forEach((fn) => {
+    fn.addEnvironment('DB_LAMBDA_NAME', backend.databaseOperation.resources.lambda.functionName);
+  });
 }

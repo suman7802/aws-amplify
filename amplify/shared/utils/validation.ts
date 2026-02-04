@@ -55,10 +55,7 @@ import { ApiError, handleError } from './errors';
  * // Throws ApiError with statusCode 400 and errorCode "validation error"
  * // error.details contains array of field-specific validation issues
  */
-export const parseAndValidate = <T>(
-  event: APIGatewayProxyEvent,
-  schema: ZodSchema<T>,
-) => {
+export const parseAndValidate = <T>(event: APIGatewayProxyEvent, schema: ZodSchema<T>) => {
   if (!event.body) {
     throw new ApiError(400, 'Request body is missing');
   }

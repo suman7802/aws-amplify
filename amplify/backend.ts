@@ -10,6 +10,7 @@ import { updateTodo } from './functions/update-todo/resource';
 import { deleteTodo } from './functions/delete-todo/resource';
 import { wiring } from './config/wiring';
 import { IAMPolicies } from './iam/policies';
+import { databaseOperation } from './functions/database-operation/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -18,6 +19,7 @@ export const backend = defineBackend({
   storage,
   auth,
   data,
+  databaseOperation,
   generateUploadUrl,
   createTodo,
   getTodo,

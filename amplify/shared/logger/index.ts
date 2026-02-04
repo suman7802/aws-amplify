@@ -7,4 +7,5 @@ export const logger = {
   service: new Logger({ serviceName: 'service' }),
   database: new Logger({ serviceName: 'database' }),
   S3Bucket: new Logger({ serviceName: 'S3Bucket' }),
+  dbOperation: new Logger({ serviceName: 'dbOperation' }),
 };

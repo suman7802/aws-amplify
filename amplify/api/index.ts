@@ -1,9 +1,4 @@
-import {
-  RestApi,
-  LambdaIntegration,
-  Cors,
-  IResource,
-} from 'aws-cdk-lib/aws-apigateway';
+import { RestApi, LambdaIntegration, Cors, IResource } from 'aws-cdk-lib/aws-apigateway';
 import { AppBackend } from '../shared/types/backend';
 import { configureTodoRoutes } from './todo';
 

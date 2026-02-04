@@ -13,8 +13,7 @@ export interface UserInfo {
  */
 function parseGroups(rawGroups: any): string[] {
   if (Array.isArray(rawGroups)) return rawGroups;
-  if (typeof rawGroups === 'string')
-    return rawGroups.split(',').map((g) => g.trim());
+  if (typeof rawGroups === 'string') return rawGroups.split(',').map((g) => g.trim());
   return [];
 }
 
