@@ -5,7 +5,7 @@ import { apiHandler } from '../../shared/utils/apiHandler.util';
 import { createResponse } from '../../shared/utils/response.util';
 
 export const handler: Handler = apiHandler(async (event, context) => {
-  logger.crud.info(`create todo fn, evnet: ${event}`);
+  logger.crud.info('create todo fn event', { event });
 
   const result = await dbClient({
     action: 'create',

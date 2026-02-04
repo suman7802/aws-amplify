@@ -68,6 +68,9 @@ export const handler: Handler = async (event: { payload: DynamoPayload }) => {
     }
 
     default:
-      throw new ApiError(400, `database-operation: Unsupported action: ${action}`);
+      throw new ApiError(
+        400,
+        `database-operation: Unsupported action: ${action}`,
+      );
   }
 };

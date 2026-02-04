@@ -28,7 +28,7 @@ export function withUpdateMetadata<T extends Record<string, any>>(
   values: T,
 ): T {
   const timestamp = now();
-  
+
   return {
     ...values,
     updatedAt: values.updatedAt ?? timestamp,
