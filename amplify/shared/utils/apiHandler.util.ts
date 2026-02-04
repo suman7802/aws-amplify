@@ -1,6 +1,9 @@
-import type { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
-import { createResponse } from './response';
-import { handleError } from './errors';
+import type {
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  Context,
+} from 'aws-lambda';
+import { handleError } from './errors.util';
 
 /**
  * Wrapper function for AWS Lambda handlers to standardize API responses and error handling.
@@ -45,8 +48,13 @@ import { handleError } from './errors';
  *
  * @returns APIGatewayProxyResult - The Lambda-compatible response
  */
-export const apiHandler = <T>(handler: (event: APIGatewayProxyEvent, context: Context) => Promise<T>) => {
-  return async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
+export const apiHandler = <T>(
+  handler: (event: APIGatewayProxyEvent, context: Context) => Promise<T>,
+) => {
+  return async (
+    event: APIGatewayProxyEvent,
+    context: Context,
+  ): Promise<APIGatewayProxyResult> => {
     try {
       const data = await handler(event, context);
       return data as APIGatewayProxyResult;

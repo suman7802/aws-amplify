@@ -5,7 +5,9 @@ import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
  * Reads from environment variable `ALLOWED_ORIGINS` (comma-separated).
  * Defaults to "*" (allow all origins) if not set.
  */
-const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? '*').split(',').map((o) => o.trim());
+const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? '*')
+  .split(',')
+  .map((o) => o.trim());
 
 /**
  * Resolves the appropriate Access-Control-Allow-Origin header
@@ -17,7 +19,11 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? '*').split(',').map((o) =
 const resolveOrigin = (event?: APIGatewayProxyEvent) => {
   const origin = event?.headers?.origin ?? event?.headers?.Origin;
   if (!origin) return '*';
-  return allowedOrigins.includes('*') ? '*' : allowedOrigins.includes(origin) ? origin : '';
+  return allowedOrigins.includes('*')
+    ? '*'
+    : allowedOrigins.includes(origin)
+      ? origin
+      : '';
 };
 
 /**
@@ -58,7 +64,11 @@ const buildHeaders = (event?: APIGatewayProxyEvent) => ({
  * return createResponse(400, { message: "Invalid input", errors: validationErrors }, event)
  * ```
  */
-export const createResponse = <T>(statusCode: number, body: T, event?: APIGatewayProxyEvent): APIGatewayProxyResult => ({
+export const createResponse = <T>(
+  statusCode: number,
+  body: T,
+  event?: APIGatewayProxyEvent,
+): APIGatewayProxyResult => ({
   statusCode,
   headers: buildHeaders(event),
   body: JSON.stringify(body),

@@ -1,5 +1,5 @@
 import { LambdaIntegration, IResource } from 'aws-cdk-lib/aws-apigateway';
-import { AppBackend } from '../shared/types/backend';
+import { AppBackend } from '../shared/types/backend.type';
 
 /**
  * Configures the '/todos' resource tree.

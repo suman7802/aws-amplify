@@ -1,6 +1,6 @@
-import { RestApi, LambdaIntegration, Cors, IResource } from 'aws-cdk-lib/aws-apigateway';
-import { AppBackend } from '../shared/types/backend';
-import { configureTodoRoutes } from './todo';
+import { RestApi, Cors } from 'aws-cdk-lib/aws-apigateway';
+import { AppBackend } from '../shared/types/backend.type';
+import { configureTodoRoutes } from './todo.api';
 
 /**
  * Main entry point for API Gateway configuration.
@@ -11,14 +11,14 @@ import { configureTodoRoutes } from './todo';
  * @throws Will throw an error if the required Lambda resources are missing from the backend object.
  */
 export function setupApiGateway(backend: AppBackend) {
-  const apiStack = backend.createStack('AppApiStack');
+  const apiStack = backend.createStack('RestApiStack');
 
   /**
    * Initialize the REST API.
    * Default CORS is applied to all resources to allow cross-origin requests from the frontend.
    */
-  const api = new RestApi(apiStack, 'AppApi', {
-    restApiName: 'CoreAppApi',
+  const api = new RestApi(apiStack, 'RestApi', {
+    restApiName: 'RestApi',
     description: 'Main REST API for Todo and User management.',
     defaultCorsPreflightOptions: {
       allowOrigins: Cors.ALL_ORIGINS,

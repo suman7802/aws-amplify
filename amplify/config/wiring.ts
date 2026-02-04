@@ -1,4 +1,4 @@
-import { AppBackend } from '../shared/types/backend';
+import { AppBackend } from '../shared/types/backend.type';
 
 /**
  * Synchronizes and injects resource-specific environment variables into Lambda functions.
@@ -11,12 +11,36 @@ export function wiring(backend: AppBackend) {
   /**
    * sync the env
    */
-  backend.generateUploadUrl.addEnvironment('MEDIA_BUCKET', backend.storage.resources.bucket.bucketName);
+  backend.generateUploadUrl.addEnvironment(
+    'MEDIA_BUCKET',
+    backend.storage.resources.bucket.bucketName,
+  );
 
-  const crudLambdas = [backend.createTodo, backend.updateTodo, backend.deleteTodo, backend.getTodo];
+  const crudLambdas = [
+    backend.createTodo,
+    backend.updateTodo,
+    backend.deleteTodo,
+    backend.getTodo,
+  ];
 
   // add env to all lambdas that need to call db
   crudLambdas.forEach((fn) => {
-    fn.addEnvironment('DB_LAMBDA_NAME', backend.databaseOperation.resources.lambda.functionName);
+    fn.addEnvironment(
+      'DB_LAMBDA_NAME',
+      backend.databaseOperation.resources.lambda.functionName,
+    );
   });
+
+  backend.databaseOperation.addEnvironment(
+    'TODO_TABLE_NAME',
+    backend.data.resources.tables['Todo'].tableName,
+  );
+  backend.databaseOperation.addEnvironment(
+    'USER_TABLE_NAME',
+    backend.data.resources.tables['User'].tableName,
+  );
+  backend.databaseOperation.addEnvironment(
+    'TEST_TABLE_NAME',
+    backend.data.resources.tables['Test'].tableName,
+  );
 }

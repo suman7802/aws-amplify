@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { ApiError } from './errors';
+import { ApiError } from './errors.util';
 
 export interface UserInfo {
   userId: string;
@@ -13,7 +13,8 @@ export interface UserInfo {
  */
 function parseGroups(rawGroups: any): string[] {
   if (Array.isArray(rawGroups)) return rawGroups;
-  if (typeof rawGroups === 'string') return rawGroups.split(',').map((g) => g.trim());
+  if (typeof rawGroups === 'string')
+    return rawGroups.split(',').map((g) => g.trim());
   return [];
 }
 

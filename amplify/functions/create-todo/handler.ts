@@ -1,24 +1,21 @@
 import type { Handler } from 'aws-lambda';
 import { logger } from '../../shared/logger';
-import { apiHandler } from '../../shared/utils/apiHandler';
-import { createResponse } from '../../shared/utils/response';
-import { DynamoPayload, TableItemMap } from '../../shared/db/contracts';
-import { sendToDb } from '../../shared/db/client';
+import { dbClient } from '../../shared/db/client';
+import { apiHandler } from '../../shared/utils/apiHandler.util';
+import { createResponse } from '../../shared/utils/response.util';
 
 export const handler: Handler = apiHandler(async (event, context) => {
-  logger.crud.info('Hello World, create todo');
+  logger.crud.info(`create todo fn, evnet: ${event}`);
 
-  const payload: DynamoPayload = {
+  const result = await dbClient({
     action: 'create',
-    table: 'Todo',
+    table: 'Test',
     item: {
-      title: 'Learn AWS',
-      content: 'Learn AWS',
-      userId: '123',
+      name: 'Suman Sharma',
+      email: 'suman@gmail.com',
+      phone: '+9779840282545',
     },
-  };
-
-  const result = await sendToDb(payload);
+  });
 
   return createResponse(201, result, event);
 });

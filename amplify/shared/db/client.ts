@@ -1,5 +1,5 @@
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
-import { DynamoPayload } from './contracts';
+import { DynamoPayload } from './contracts.type';
 
 const lambda = new LambdaClient({});
 
@@ -7,7 +7,7 @@ const lambda = new LambdaClient({});
  * Sends a payload to the DB Gateway Lambda and returns the response.
  * All upstream functions call this wrapper, never InvokeCommand directly.
  */
-export async function sendToDb(payload: DynamoPayload) {
+export async function dbClient(payload: DynamoPayload) {
   const response = await lambda.send(
     new InvokeCommand({
       FunctionName: process.env.DB_LAMBDA_NAME,

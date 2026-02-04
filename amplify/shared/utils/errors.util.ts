@@ -1,13 +1,13 @@
 import { ZodError } from 'zod';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 
-import { createResponse } from './response';
+import { createResponse } from './response.util';
 
 /**
  * Custom error class for application-specific errors.
  *
  * Use this class to throw structured errors in your Lambda handlers.
- * It allows attaching HTTP status codes and optional extra error details.
+ * It allows attaching HTTP status codes and optional ext ra error details.
  *
  * @example
  * ```ts

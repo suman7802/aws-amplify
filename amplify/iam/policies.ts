@@ -1,5 +1,6 @@
-import { AppBackend } from '../shared/types/backend';
-import { attachTodoTablePolicies } from './tables/todo.iam';
+import { AppBackend } from '../shared/types/backend.type';
+import { attachFunctionPolicies } from './functions';
+import { attachTablePolicies } from './tables';
 
 /**
  * Attaches IAM policies for all backend resources.
@@ -19,5 +20,6 @@ import { attachTodoTablePolicies } from './tables/todo.iam';
  * @param backend - The initialized Amplify Gen 2 backend instance.
  */
 export function IAMPolicies(backend: AppBackend) {
-  attachTodoTablePolicies(backend);
+  attachTablePolicies(backend);
+  attachFunctionPolicies(backend);
 }
