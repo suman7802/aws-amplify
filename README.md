@@ -124,3 +124,24 @@ This project is set up with Amplify Gen 2. To deploy:
 
 Refer to the official Amplify documentation for the latest deployment workflows:  
 `https://docs.amplify.aws/react/build-a-backend/`
+
+```json
+{
+  "AuthFlow": "USER_PASSWORD_AUTH",
+  "ClientId": "51c73bpha5eiohtr517om73kur",
+  "Username": "mansu7802@gmail.com",
+  "Password": "Rgsvsl@7802",
+  "AuthParameters": {
+    "USERNAME": "mansu7802@gmail.com",
+    "PASSWORD": "Rgsvsl@7802"
+  },
+  "UserAttributes": [
+    {
+      "Name": "phone",
+      "Value": "+9779840282545"
+    }
+  ]
+}
+```
+
+AWSCognitoIdentityProviderService.InitiateAuth

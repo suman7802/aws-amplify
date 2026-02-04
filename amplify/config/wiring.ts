@@ -17,6 +17,7 @@ export function wiring(backend: AppBackend) {
   );
 
   const crudLambdas = [
+    backend.postConfirmation,
     backend.createTodo,
     backend.updateTodo,
     backend.deleteTodo,
@@ -31,6 +32,7 @@ export function wiring(backend: AppBackend) {
     );
   });
 
+  // add env to db lambda to get table names
   backend.databaseOperation.addEnvironment(
     'TODO_TABLE_NAME',
     backend.data.resources.tables['Todo'].tableName,
@@ -38,9 +40,5 @@ export function wiring(backend: AppBackend) {
   backend.databaseOperation.addEnvironment(
     'USER_TABLE_NAME',
     backend.data.resources.tables['User'].tableName,
-  );
-  backend.databaseOperation.addEnvironment(
-    'TEST_TABLE_NAME',
-    backend.data.resources.tables['Test'].tableName,
   );
 }

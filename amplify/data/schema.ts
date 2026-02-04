@@ -34,20 +34,5 @@ export const userSchema = a.schema({
 });
 export type UserType = ClientSchema<typeof userSchema>;
 
-export const testSchema = a.schema({
-  Test: a
-    .model({
-      id: a.id(),
-      name: a.string().required(),
-      email: a.email().required(),
-      phone: a.phone(),
-      profileUrl: a.url(),
-      createdAt: a.datetime(),
-      updatedAt: a.datetime(),
-    })
-    .authorization((allow) => [allow.guest()]),
-});
-export type TestType = ClientSchema<typeof testSchema>;
-
-export const schema = a.combine([todoSchema, userSchema, testSchema]);
+export const schema = a.combine([todoSchema, userSchema]);
 export type SchemaType = ClientSchema<typeof schema>;

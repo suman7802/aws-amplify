@@ -1,5 +1,4 @@
 import { AppBackend } from '../../shared/types/backend.type';
-import { attachTestTablePolicies } from './test.iam';
 import { attachTodoTablePolicies } from './todo.iam';
 import { attachUserTablePolicies } from './user.iam';
 
@@ -11,5 +10,4 @@ import { attachUserTablePolicies } from './user.iam';
 export function attachTablePolicies(backend: AppBackend) {
   attachTodoTablePolicies(backend);
   attachUserTablePolicies(backend);
-  attachTestTablePolicies(backend);
 }
