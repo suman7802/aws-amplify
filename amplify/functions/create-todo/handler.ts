@@ -7,15 +7,5 @@ import { createResponse } from '../../shared/utils/response.util';
 export const handler: Handler = apiHandler(async (event, context) => {
   logger.crud.info('create todo fn event', { event });
 
-  const result = await dbClient({
-    action: 'create',
-    table: 'Test',
-    item: {
-      name: 'Suman Sharma',
-      email: 'suman@gmail.com',
-      phone: '+9779840282545',
-    },
-  });
-
-  return createResponse(201, result, event);
+  return createResponse(201, { message: 'Todo created successfully' }, event);
 });

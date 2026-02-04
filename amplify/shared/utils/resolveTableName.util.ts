@@ -24,7 +24,6 @@ export function resolveTableName(table: DynamoPayload['table']): string {
   const tableMap: Record<DynamoPayload['table'], string | undefined> = {
     Todo: process.env.TODO_TABLE_NAME,
     User: process.env.USER_TABLE_NAME,
-    Test: process.env.TEST_TABLE_NAME,
   };
 
   const tableName = tableMap[table];

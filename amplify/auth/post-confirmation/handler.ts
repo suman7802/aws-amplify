@@ -2,6 +2,7 @@ import type { PostConfirmationTriggerHandler } from 'aws-lambda';
 import {
   CognitoIdentityProviderClient,
   AdminUpdateUserAttributesCommand,
+  AdminAddUserToGroupCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 
 import { dbClient } from '../../shared/db/client';
@@ -18,6 +19,9 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
   const { userPoolId, userName: email, request } = event;
   const { sub, name, phone_number } = request.userAttributes;
 
+  const domain = email.split('@')[1];
+  const group = domain === 'climatecleansolutions.com' ? 'admin' : 'user';
+
   await cognitoClient.send(
     new AdminUpdateUserAttributesCommand({
       UserPoolId: userPoolId,
@@ -28,6 +32,14 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
           Value: 'PENDING',
         },
       ],
+    }),
+  );
+
+  await cognitoClient.send(
+    new AdminAddUserToGroupCommand({
+      UserPoolId: userPoolId,
+      Username: email,
+      GroupName: group,
     }),
   );
 

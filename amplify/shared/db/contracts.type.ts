@@ -1,9 +1,8 @@
-import { TodoType, UserType, TestType } from '../../data/schema';
+import { TodoType, UserType } from '../../data/schema';
 
 export type TableItemMap = {
   Todo: Omit<TodoType['Todo']['type'], 'user'>;
   User: Omit<UserType['User']['type'], 'todos'>;
-  Test: TestType['Test']['type'];
 };
 
 /**
@@ -33,16 +32,4 @@ export type DynamoPayload =
       updateExpression: string;
       values: Partial<TableItemMap['User']>;
     }
-  | { table: 'User'; action: 'delete'; key: Pick<TableItemMap['User'], 'id'> }
-
-  // Test table
-  | { table: 'Test'; action: 'create'; item: TableItemMap['Test'] }
-  | { table: 'Test'; action: 'get'; key: Pick<TableItemMap['Test'], 'id'> }
-  | {
-      table: 'Test';
-      action: 'update';
-      key: Pick<TableItemMap['Test'], 'id'>;
-      updateExpression: string;
-      values: Partial<TableItemMap['Test']>;
-    }
-  | { table: 'Test'; action: 'delete'; key: Pick<TableItemMap['Test'], 'id'> };
+  | { table: 'User'; action: 'delete'; key: Pick<TableItemMap['User'], 'id'> };

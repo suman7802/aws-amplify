@@ -15,4 +15,10 @@ export const auth = defineAuth({
     preSignUp,
     postConfirmation,
   },
+  userAttributes: {
+    'custom:status': {
+      dataType: 'String',
+      mutable: true,
+    },
+  },
 });
