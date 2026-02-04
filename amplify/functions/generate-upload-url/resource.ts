@@ -6,7 +6,7 @@ export const generateUploadUrl = defineFunction({
   entry: './handler.ts',
   bundling: { minify: false },
   timeoutSeconds: 15,
-  resourceGroupName: 'media',
+  resourceGroupName: 'storage',
   logging: {
     format: 'json',
     level: 'debug',
