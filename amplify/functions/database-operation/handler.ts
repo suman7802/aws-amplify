@@ -8,13 +8,13 @@ import {
 import type { Handler } from 'aws-lambda';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
+import { ApiError } from '../../shared/utils';
+import { DynamoPayload } from '../../shared/db/contracts.type';
 import {
-  ApiError,
   resolveTableName,
   withCreateMetadata,
   withUpdateMetadata,
-} from '../../shared/utils';
-import { DynamoPayload } from '../../shared/db/contracts.type';
+} from './utils';
 
 const client = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 

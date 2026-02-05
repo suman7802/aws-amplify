@@ -17,7 +17,6 @@ export function wiring(backend: AppBackend) {
   );
 
   const crudLambdas = [
-    // backend.postConfirmation,
     backend.createTodo,
     backend.updateTodo,
     backend.deleteTodo,

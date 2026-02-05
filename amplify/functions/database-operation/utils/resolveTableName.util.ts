@@ -1,5 +1,5 @@
-import { DynamoPayload } from '../db/contracts.type';
-import { ApiError } from './errors.util';
+import { DynamoPayload } from '../../../shared/db/contracts.type';
+import { ApiError } from '../../../shared/utils/errors.util';
 
 /**
  * Resolve the physical DynamoDB table name for a logical table key.
