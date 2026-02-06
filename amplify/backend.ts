@@ -13,10 +13,7 @@ import { databaseOperation } from './functions/database-operation/resource';
 import { postConfirmation } from './auth/post-confirmation/resource';
 import { IAMPolicies } from './IAMPolicies';
 
-/**
- * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
- */
-export const backend = defineBackend({
+export const backendProps = {
   postConfirmation,
   storage,
   auth,
@@ -27,7 +24,11 @@ export const backend = defineBackend({
   getTodo,
   updateTodo,
   deleteTodo,
-});
+};
+/**
+ * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
+ */
+export const backend = defineBackend(backendProps);
 
 wiring(backend);
 setupApiGateway(backend);

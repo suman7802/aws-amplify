@@ -8,7 +8,6 @@ export function attachFunctionPolicies(backend: AppBackend) {
   const databaseOperationLambda = backend.databaseOperation.resources.lambda;
 
   const crudLambdas = [
-    backend.postConfirmation,
     backend.createTodo,
     backend.updateTodo,
     backend.deleteTodo,
