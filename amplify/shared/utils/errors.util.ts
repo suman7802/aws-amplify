@@ -1,73 +1,113 @@
 import { ZodError } from 'zod';
-
 import { logger } from '../logger';
 
 /**
- * Custom error class for application-specific errors.
- *
- * Use this class to throw structured errors in your Lambda handlers.
- * It allows attaching HTTP status codes and optional ext ra error details.
- *
- * @example
- * ```ts
- * throw new ApiError(403, "User is not authorized", { requiredRole: "ADMIN" })
- * ```
+ * Base class for all API errors.
  */
 export class ApiError extends Error {
-  /**
-   * @param statusCode - HTTP status code to return (e.g., 400, 403, 500)
-   * @param message - Human-readable error message
-   * @param errors - Optional structured details (e.g., validation errors, field errors)
-   */
   constructor(
     public statusCode: number,
     public message: string,
-    public errors?: unknown,
+    public code: string = 'INTERNAL_SERVER_ERROR',
+    public details?: unknown,
   ) {
     super(message);
     this.name = 'ApiError';
+    Object.setPrototypeOf(this, ApiError.prototype);
+  }
+
+  toJSON() {
+    return {
+      success: false,
+      error: {
+        code: this.code,
+        message: this.message,
+        details: this.details,
+      },
+    };
   }
 }
 
 /**
- * Universal error handler for Lambda functions.
- *
- * Converts different types of errors into consistent API responses:
- *  - Zod validation errors → 400
- *  - ApiError instances → specified status code
- *  - Unknown/internal errors → 500
- *
- * @param error - The caught error object
- * @returns Throws an ApiError with proper status and message
- *
- * @example
- * try {
- *   // Lambda logic
- * } catch (err) {
- *   handleError(err);
- * }
- *
+ * 400 Bad Request
+ */
+export class BadRequestError extends ApiError {
+  constructor(message: string = 'Bad Request', details?: unknown) {
+    super(400, message, 'BAD_REQUEST', details);
+    Object.setPrototypeOf(this, BadRequestError.prototype);
+  }
+}
+
+/**
+ * 401 Unauthorized
+ */
+export class UnauthorizedError extends ApiError {
+  constructor(message: string = 'Unauthorized') {
+    super(401, message, 'UNAUTHORIZED');
+    Object.setPrototypeOf(this, UnauthorizedError.prototype);
+  }
+}
+
+/**
+ * 403 Forbidden
+ */
+export class ForbiddenError extends ApiError {
+  constructor(message: string = 'Forbidden') {
+    super(403, message, 'FORBIDDEN');
+    Object.setPrototypeOf(this, ForbiddenError.prototype);
+  }
+}
+
+/**
+ * 404 Not Found
+ */
+export class NotFoundError extends ApiError {
+  constructor(message: string = 'Not Found') {
+    super(404, message, 'NOT_FOUND');
+    Object.setPrototypeOf(this, NotFoundError.prototype);
+  }
+}
+
+/**
+ * 409 Conflict
+ */
+export class ConflictError extends ApiError {
+  constructor(message: string = 'Conflict', details?: unknown) {
+    super(409, message, 'CONFLICT', details);
+    Object.setPrototypeOf(this, ConflictError.prototype);
+  }
+}
+
+/**
+ * 500 Internal Server Error
+ */
+export class InternalServerError extends ApiError {
+  constructor(message: string = 'Internal Server Error') {
+    super(500, message, 'INTERNAL_SERVER_ERROR');
+    Object.setPrototypeOf(this, InternalServerError.prototype);
+  }
+}
+
+/**
+ * Processes errors into a consistent format for API responses.
  */
 export const handleError = (error: unknown) => {
-  logger.error.error('SERVER ERROR:', { error });
+  logger.error.error('Error encountered:', { error });
 
-  // Handle Zod validation errors
-  if (error instanceof ZodError) {
-    const errorList = error.issues.map((e) => ({
-      code: e.code,
-      message: e.message,
-      field: e.path.join('.'),
-    }));
-
-    throw new ApiError(400, 'Schema validation failed', errorList);
+  if (error instanceof ApiError) {
+    return error;
   }
 
-  // Handle custom application errors
-  if (error instanceof ApiError) throw error;
+  if (error instanceof ZodError) {
+    const details = error.issues.map((issue) => ({
+      path: issue.path.join('.'),
+      message: issue.message,
+      code: issue.code,
+    }));
+    return new BadRequestError('Validation failed', details);
+  }
 
-  // Fallback for unexpected errors
-  throw new ApiError(
-    500,
-    error instanceof Error ? error.message : String(error),
-  );
+  const message =
+    error instanceof Error ? error.message : 'An unexpected error occurred';
+  return new InternalServerError(message);
 };

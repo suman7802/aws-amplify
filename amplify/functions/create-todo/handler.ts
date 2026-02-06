@@ -2,20 +2,22 @@ import type { Handler } from 'aws-lambda';
 import { logger } from '../../shared/logger';
 import { dbClient } from '../../shared/db/client';
 import { apiHandler } from '../../shared/utils/apiHandler.util';
-import { createResponse } from '../../shared/utils/response.util';
+import { validate } from '../../shared/utils';
+import { createTodoSchema } from '../../shared/schema/todo.schema';
+import { created } from '../../shared/utils/response.util';
 
-export const handler: Handler = apiHandler(async (event, context) => {
+export const handler: Handler = apiHandler(async (event) => {
   logger.crud.info('create todo fn event', { event });
+  const { body } = validate.body(event, createTodoSchema);
 
   const result = await dbClient({
     action: 'create',
     table: 'Todo',
     item: {
       userId: '123',
-      title: 'testing',
-      content: 'testing',
+      ...body,
     },
   });
 
-  return createResponse(201, { message: 'Todo created successfully', result }, event);
+  return created({ message: 'Todo created successfully', result }, event);
 });

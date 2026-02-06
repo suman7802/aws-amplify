@@ -1,68 +1,42 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
 /**
- * List of allowed origins for CORS.
- * Reads from environment variable `ALLOWED_ORIGINS` (comma-separated).
- * Defaults to "*" (allow all origins) if not set.
+ * Standard HTTP response headers.
  */
-const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? '*')
-  .split(',')
-  .map((o) => o.trim());
-
-/**
- * Resolves the appropriate Access-Control-Allow-Origin header
- * based on the incoming request headers and allowed origins.
- *
- * @param event - Optional APIGatewayProxyEvent containing request headers
- * @returns The origin to allow in CORS (string)
- */
-const resolveOrigin = (event?: APIGatewayProxyEvent) => {
-  const origin = event?.headers?.origin ?? event?.headers?.Origin;
-  if (!origin) return '*';
-  return allowedOrigins.includes('*')
-    ? '*'
-    : allowedOrigins.includes(origin)
-      ? origin
-      : '';
+const BASE_HEADERS: Record<string, string> = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Credentials': 'true',
 };
 
 /**
- * Builds HTTP response headers, including CORS and JSON content type.
- *
- * @param event - Optional APIGatewayProxyEvent for dynamic CORS handling
- * @returns Object containing response headers
+ * Resolves the appropriate Access-Control-Allow-Origin header.
  */
-const buildHeaders = (event?: APIGatewayProxyEvent) => ({
-  'Content-Type': 'application/json',
+const resolveOrigin = (event?: APIGatewayProxyEvent): string => {
+  const allowedOriginsStr = process.env.ALLOWED_ORIGINS || '*';
+  if (allowedOriginsStr === '*') return '*';
+
+  const allowedOrigins = allowedOriginsStr.split(',').map((o) => o.trim());
+  const requestOrigin = event?.headers?.origin || event?.headers?.Origin;
+
+  if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
+    return requestOrigin;
+  }
+
+  return allowedOrigins[0] || '*';
+};
+
+/**
+ * Builds standardized headers including CORS.
+ */
+const buildHeaders = (
+  event?: APIGatewayProxyEvent,
+): Record<string, string> => ({
+  ...BASE_HEADERS,
   'Access-Control-Allow-Origin': resolveOrigin(event),
-  'Access-Control-Allow-Credentials': 'true',
 });
 
 /**
  * Creates a standardized API Gateway response.
- *
- * This function ensures consistent response structure for all Lambda handlers:
- *  - Sets HTTP status code
- *  - Adds appropriate headers (CORS, content-type)
- *  - Serializes the response body as JSON
- *
- * @template T - Type of the response body
- *
- * @param statusCode - HTTP status code (e.g., 200, 400, 500)
- * @param body - The response payload to send to the client
- * @param event - Optional APIGatewayProxyEvent for dynamic headers
- *
- * @returns APIGatewayProxyResult - Lambda-compatible response object
- *
- * @example
- * ```ts
- * return createResponse(200, { message: "Success", data: user }, event)
- * ```
- *
- * @example
- * ```ts
- * return createResponse(400, { message: "Invalid input", errors: validationErrors }, event)
- * ```
  */
 export const createResponse = <T>(
   statusCode: number,
@@ -73,3 +47,21 @@ export const createResponse = <T>(
   headers: buildHeaders(event),
   body: JSON.stringify(body),
 });
+
+/**
+ * Standardized success response.
+ */
+export const success = <T>(data: T, event?: APIGatewayProxyEvent) =>
+  createResponse(200, { success: true, data }, event);
+
+/**
+ * Standardized created response.
+ */
+export const created = <T>(data: T, event?: APIGatewayProxyEvent) =>
+  createResponse(201, { success: true, data }, event);
+
+/**
+ * Standardized no-content response.
+ */
+export const noContent = (event?: APIGatewayProxyEvent) =>
+  createResponse(204, null, event);
