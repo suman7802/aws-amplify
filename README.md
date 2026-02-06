@@ -143,5 +143,3 @@ Refer to the official Amplify documentation for the latest deployment workflows:
   ]
 }
 ```
-
-AWSCognitoIdentityProviderService.InitiateAuth

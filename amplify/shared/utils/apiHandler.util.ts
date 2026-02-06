@@ -54,12 +54,12 @@ export const apiHandler = <T>(
   return async (
     event: APIGatewayProxyEvent,
     context: Context,
-  ): Promise<APIGatewayProxyResult> => {
+  ): Promise<APIGatewayProxyResult | unknown> => {
     try {
       const data = await handler(event, context);
       return data as APIGatewayProxyResult;
     } catch (err) {
-      return handleError(err, event);
+      handleError(err);
     }
   };
 };

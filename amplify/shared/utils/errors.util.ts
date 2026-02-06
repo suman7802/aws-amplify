@@ -1,7 +1,6 @@
 import { ZodError } from 'zod';
-import { APIGatewayProxyEvent } from 'aws-lambda';
 
-import { createResponse } from './response.util';
+import { logger } from '../logger';
 
 /**
  * Custom error class for application-specific errors.
@@ -33,78 +32,42 @@ export class ApiError extends Error {
 /**
  * Universal error handler for Lambda functions.
  *
- * Converts different types of errors into consistent API Gateway responses.
- * Handles:
- *  - Zod validation errors (returns 400)
- *  - ApiError instances (returns specified status code)
- *  - Unknown/internal errors (returns 500)
+ * Converts different types of errors into consistent API responses:
+ *  - Zod validation errors → 400
+ *  - ApiError instances → specified status code
+ *  - Unknown/internal errors → 500
  *
  * @param error - The caught error object
- * @param event - Optional APIGatewayProxyEvent for CORS headers or logging
- * @returns APIGatewayProxyResult - formatted Lambda response
+ * @returns Throws an ApiError with proper status and message
  *
  * @example
- * ```ts
  * try {
- *   // your Lambda logic
+ *   // Lambda logic
  * } catch (err) {
- *   return handleError(err, event)
- * }
- * ```
- *
- * @example
- * // Validation error
- * const schema = z.object({ email: z.string().email() })
- * try {
- *   schema.parse({ email: "invalid" })
- * } catch (err) {
- *   return handleError(err, event) // returns 400 with details
+ *   handleError(err);
  * }
  *
- * @example
- * // ApiError
- * throw new ApiError(403, "Access denied", { requiredRole: "ADMIN" })
- * handleError(error, event) // returns 403 with message and details
- *
- * @example
- * // Unknown error
- * throw new Error("Something went wrong")
- * handleError(error, event) // returns 500
  */
-export const handleError = (error: unknown, event?: APIGatewayProxyEvent) => {
-  console.error('SERVER ERROR:', error);
+export const handleError = (error: unknown) => {
+  logger.error.error('SERVER ERROR:', { error });
 
   // Handle Zod validation errors
   if (error instanceof ZodError) {
-    return createResponse(
-      400,
-      {
-        message: 'Validation Failed',
-        errors: error.errors,
-      },
-      event,
-    );
+    const errorList = error.issues.map((e) => ({
+      code: e.code,
+      message: e.message,
+      field: e.path.join('.'),
+    }));
+
+    throw new ApiError(400, 'Schema validation failed', errorList);
   }
 
   // Handle custom application errors
-  if (error instanceof ApiError) {
-    return createResponse(
-      error.statusCode,
-      {
-        message: error.message,
-        errors: error.errors,
-      },
-      event,
-    );
-  }
+  if (error instanceof ApiError) throw error;
 
   // Fallback for unexpected errors
-  return createResponse(
+  throw new ApiError(
     500,
-    {
-      message: 'Internal Server Error',
-      errors: error instanceof Error ? error.message : String(error),
-    },
-    event,
+    error instanceof Error ? error.message : String(error),
   );
 };

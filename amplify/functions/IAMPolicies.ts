@@ -1,11 +1,10 @@
-import { AppBackend } from '../../shared/types/backend.type';
+import { AppBackend } from '../shared/types/backend.type';
 
 /**
- * Grants all CRUD Lambdas permission to invoke the databaseOperation Lambda.
- *
+ * Attaches IAM policies for all lambda functions.
  * @param backend - The initialized Amplify Gen 2 backend instance.
  */
-export function attachDatabaseOperationLambdaPolicies(backend: AppBackend) {
+export function attachFunctionPolicies(backend: AppBackend) {
   const databaseOperationLambda = backend.databaseOperation.resources.lambda;
 
   const crudLambdas = [

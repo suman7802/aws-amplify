@@ -11,6 +11,9 @@ import { configureTodoRoutes } from './todo.api';
  * @throws Will throw an error if the required Lambda resources are missing from the backend object.
  */
 export function setupApiGateway(backend: AppBackend) {
+  /**
+   * Create the API Gateway stack.
+   */
   const apiStack = backend.createStack('RestApiStack');
 
   /**

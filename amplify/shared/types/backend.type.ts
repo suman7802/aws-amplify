@@ -9,8 +9,10 @@ import { updateTodo } from '../../functions/update-todo/resource';
 import { deleteTodo } from '../../functions/delete-todo/resource';
 import { getTodo } from '../../functions/get-todo/resource';
 import { databaseOperation } from '../../functions/database-operation/resource';
+import { postConfirmation } from '../../auth/post-confirmation/resource';
 
 export const schema = {
+  postConfirmation,
   auth,
   data,
   storage,

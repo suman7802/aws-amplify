@@ -1,5 +1,8 @@
 import { defineStorage } from '@aws-amplify/backend';
 
+/**
+ * Defines the storage resource for the backend.
+ */
 export const storage = defineStorage({
   name: 'storage',
   access: (allow) => ({

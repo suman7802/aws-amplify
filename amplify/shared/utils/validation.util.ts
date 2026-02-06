@@ -67,6 +67,6 @@ export const parseAndValidate = <T>(
     const parsed = JSON.parse(event.body);
     return schema.parse(parsed);
   } catch (error) {
-    return handleError(error, event);
+    handleError(error);
   }
 };

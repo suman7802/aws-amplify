@@ -9,13 +9,15 @@ import { getTodo } from './functions/get-todo/resource';
 import { updateTodo } from './functions/update-todo/resource';
 import { deleteTodo } from './functions/delete-todo/resource';
 import { wiring } from './config/wiring';
-import { IAMPolicies } from './iam/policies';
 import { databaseOperation } from './functions/database-operation/resource';
+import { postConfirmation } from './auth/post-confirmation/resource';
+import { IAMPolicies } from './IAMPolicies';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
  */
 export const backend = defineBackend({
+  postConfirmation,
   storage,
   auth,
   data,

@@ -8,4 +8,5 @@ export const logger = {
   database: new Logger({ serviceName: 'database' }),
   S3Bucket: new Logger({ serviceName: 'S3Bucket' }),
   dbOperation: new Logger({ serviceName: 'dbOperation' }),
+  error: new Logger({ serviceName: 'error' }),
 };

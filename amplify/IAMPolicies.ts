@@ -1,6 +1,6 @@
-import { AppBackend } from '../shared/types/backend.type';
-import { attachFunctionPolicies } from './functions';
-import { attachTablePolicies } from './tables';
+import { attachTablePolicies } from './data/IAMPolicies';
+import { attachFunctionPolicies } from './functions/IAMPolicies';
+import { AppBackend } from './shared/types/backend.type';
 
 /**
  * Attaches IAM policies for all backend resources.
