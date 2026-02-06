@@ -4,14 +4,9 @@ import {
   AdminUpdateUserAttributesCommand,
   AdminAddUserToGroupCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
-
-import {
-  EventBridgeClient,
-  PutEventsCommand,
-} from '@aws-sdk/client-eventbridge';
+import { dbClient } from '../../shared/db/client';
 
 const cognitoClient = new CognitoIdentityProviderClient({});
-const eventBridgeClient = new EventBridgeClient({});
 
 /**
  * Post-Confirmation Trigger
@@ -49,28 +44,16 @@ export const handler: PostConfirmationTriggerHandler = async (event) => {
     }),
   );
 
-  // publishing event to event bridge
-  await eventBridgeClient.send(
-    new PutEventsCommand({
-      Entries: [
-        {
-          EventBusName: process.env.EVENT_BUS_NAME!,
-          Source: 'app.user',
-          DetailType: 'UserCreated',
-          Detail: JSON.stringify({
-            action: 'create',
-            table: 'User',
-            item: {
-              name,
-              email,
-              id: sub,
-              phone: phone_number,
-            },
-          }),
-        },
-      ],
-    }),
-  );
+  await dbClient({
+    action: 'create',
+    table: 'User',
+    item: {
+      name,
+      email,
+      id: sub,
+      phone: phone_number,
+    },
+  });
 
   return event;
 };
