@@ -5,7 +5,7 @@ export const createTodo = defineFunction({
   name: 'create-todo',
   entry: './handler.ts',
   bundling: { minify: false },
-  resourceGroupName: 'data',
+  resourceGroupName: 'crud',
   logging: {
     format: 'json',
     level: 'debug',

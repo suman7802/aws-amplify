@@ -5,7 +5,7 @@ export const updateTodo = defineFunction({
   name: 'update-todo',
   entry: './handler.ts',
   bundling: { minify: false },
-  resourceGroupName: 'data',
+  resourceGroupName: 'crud',
   logging: {
     format: 'json',
     level: 'debug',

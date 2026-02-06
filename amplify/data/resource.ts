@@ -7,8 +7,4 @@ export const data = defineData({
   authorizationModes: {
     defaultAuthorizationMode: 'identityPool',
   },
-  logging: {
-    retention: '1 day',
-    fieldLogLevel: 'all',
-  },
 });
