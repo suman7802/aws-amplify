@@ -8,7 +8,7 @@ import { created } from '../../shared/utils/response.util';
 
 export const handler: Handler = apiHandler(async (event) => {
   logger.crud.info('create todo fn event', { event });
-  const { body } = validate.body(event, createTodoSchema);
+  const body = validate.body(event.body, createTodoSchema);
 
   const result = await dbClient({
     action: 'create',

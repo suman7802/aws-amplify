@@ -9,13 +9,13 @@ export const validate = {
   /**
    * Parses and validates the request body.
    */
-  body: <T>(event: APIGatewayProxyEvent, schema: ZodSchema<T>): T => {
-    if (!event.body) {
+  body: <T>(body: string | null | undefined, schema: ZodSchema<T>): T => {
+    if (!body) {
       throw new BadRequestError('Request body is missing');
     }
 
     try {
-      const parsedBody = JSON.parse(event.body);
+      const parsedBody = JSON.parse(body);
       return schema.parse(parsedBody);
     } catch (error) {
       if (error instanceof SyntaxError) {
