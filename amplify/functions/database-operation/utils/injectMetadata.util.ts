@@ -16,7 +16,6 @@ export function withCreateMetadata<T extends Record<string, any>>(item: T): T {
   return {
     id: item.id ?? randomUUID(),
     createdAt: item.createdAt ?? timestamp,
-    updatedAt: item.updatedAt ?? timestamp,
     ...item,
   };
 }
