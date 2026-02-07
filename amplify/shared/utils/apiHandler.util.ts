@@ -8,7 +8,7 @@ type HandlerMode = 'api' | 'auth';
 type AuthHandler<TEvent, TResult = TEvent> = (event: TEvent, context: Context) => Promise<TResult>;
 type ApiHandler<T> = (event: APIGatewayProxyEvent, context: Context) => Promise<T | APIGatewayProxyResult>;
 
-const globalLog = new Logger({ serviceName: 'crud' });
+const globalLog = new Logger({ serviceName: 'global-logger' });
 
 /**
  * Unified Lambda handler wrapper.
