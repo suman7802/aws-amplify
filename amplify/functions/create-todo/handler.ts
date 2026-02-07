@@ -4,7 +4,7 @@ import { dbClient } from '../../shared/db/client';
 import { apiHandler } from '../../shared/utils/apiHandler.util';
 import { validate } from '../../shared/utils';
 import { createTodoSchema } from '../../shared/schema/todo.schema';
-import { created } from '../../shared/utils/response.util';
+import { Response } from '../../shared/utils/response.util';
 
 export const handler: Handler = apiHandler(async (event) => {
   logger.crud.info('create todo fn event', { event });
@@ -19,5 +19,8 @@ export const handler: Handler = apiHandler(async (event) => {
     },
   });
 
-  return created({ message: 'Todo created successfully', result }, event);
+  return Response.created(
+    { message: 'Todo created successfully', result },
+    event,
+  );
 });

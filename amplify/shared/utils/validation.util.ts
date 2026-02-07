@@ -1,6 +1,6 @@
 import { ZodSchema } from 'zod';
 import type { APIGatewayProxyEvent } from 'aws-lambda';
-import { BadRequestError } from './errors.util';
+import { Errors } from './errors.util';
 
 /**
  * Validates request components using Zod schemas.
@@ -11,7 +11,7 @@ export const validate = {
    */
   body: <T>(body: string | null | undefined, schema: ZodSchema<T>): T => {
     if (!body) {
-      throw new BadRequestError('Request body is missing');
+      throw Errors.badRequest('Request body is missing');
     }
 
     try {
@@ -19,7 +19,7 @@ export const validate = {
       return schema.parse(parsedBody);
     } catch (error) {
       if (error instanceof SyntaxError) {
-        throw new BadRequestError('Invalid JSON format');
+        throw Errors.badRequest('Invalid JSON format');
       }
       throw error;
     }

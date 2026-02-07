@@ -3,9 +3,8 @@ import type {
   APIGatewayProxyResult,
   Context,
 } from 'aws-lambda';
-import { ApiError, handleError } from './errors.util';
-import { createResponse } from './response.util';
-import { logger } from '../logger';
+import { handleError } from './errors.util';
+import { Response } from './response.util';
 
 type HandlerFunction<T> = (
   event: APIGatewayProxyEvent,
@@ -33,11 +32,10 @@ export const apiHandler = <T>(handler: HandlerFunction<T>) => {
         return result as APIGatewayProxyResult;
       }
 
-      // Otherwise, wrap in a success response
-      return createResponse(200, { success: true, data: result }, event);
+      return Response.success(result, event);
     } catch (error) {
       const apiError = handleError(error);
-      return createResponse(apiError.statusCode, apiError.toJSON(), event);
+      return Response.error(apiError.statusCode, apiError.toJSON(), event);
     }
   };
 };

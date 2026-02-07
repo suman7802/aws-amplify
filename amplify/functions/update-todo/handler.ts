@@ -1,7 +1,7 @@
 import type { Handler } from 'aws-lambda';
 import { logger } from '../../shared/logger';
 import { apiHandler } from '../../shared/utils/apiHandler.util';
-import { createResponse } from '../../shared/utils/response.util';
+import { Response } from '../../shared/utils/response.util';
 
 export const handler: Handler = apiHandler(async (event, context) => {
   logger.crud.info('Hello World, update todo');
@@ -22,8 +22,7 @@ export const handler: Handler = apiHandler(async (event, context) => {
     },
   ];
 
-  return createResponse(
-    200,
+  return Response.success(
     {
       data: mockTodo[0],
       message: 'update success',

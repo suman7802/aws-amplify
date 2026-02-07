@@ -36,32 +36,81 @@ const buildHeaders = (
 });
 
 /**
- * Creates a standardized API Gateway response.
+ * Response helper namespace.
+ *
+ * Provides standardized API Gateway responses with consistent structure
+ * and IDE autocomplete.
  */
-export const createResponse = <T>(
-  statusCode: number,
-  body: T,
-  event?: APIGatewayProxyEvent,
-): APIGatewayProxyResult => ({
-  statusCode,
-  headers: buildHeaders(event),
-  body: JSON.stringify(body),
-});
+export class Response {
+  /**
+   * Creates a generic API Gateway response.
+   *
+   * @param statusCode - HTTP status code
+   * @param body - Response payload
+   * @param event - API Gateway event (used for CORS resolution)
+   */
+  static create<T>(
+    statusCode: number,
+    body: T,
+    event?: APIGatewayProxyEvent,
+  ): APIGatewayProxyResult {
+    return {
+      statusCode,
+      headers: buildHeaders(event),
+      body: JSON.stringify(body),
+    };
+  }
 
-/**
- * Standardized success response.
- */
-export const success = <T>(data: T, event?: APIGatewayProxyEvent) =>
-  createResponse(200, { success: true, data }, event);
+  /**
+   * 200 OK response.
+   *
+   * @param data - Successful response data
+   * @param event - API Gateway event
+   */
+  static success<T>(
+    data: T,
+    event?: APIGatewayProxyEvent,
+  ): APIGatewayProxyResult {
+    return this.create(200, { success: true, data }, event);
+  }
 
-/**
- * Standardized created response.
- */
-export const created = <T>(data: T, event?: APIGatewayProxyEvent) =>
-  createResponse(201, { success: true, data }, event);
+  /**
+   * 201 Created response.
+   *
+   * @param data - Created resource data
+   * @param event - API Gateway event
+   */
+  static created<T>(
+    data: T,
+    event?: APIGatewayProxyEvent,
+  ): APIGatewayProxyResult {
+    return this.create(201, { success: true, data }, event);
+  }
 
-/**
- * Standardized no-content response.
- */
-export const noContent = (event?: APIGatewayProxyEvent) =>
-  createResponse(204, null, event);
+  /**
+   * 204 No Content response.
+   *
+   * @param event - API Gateway event
+   */
+  static noContent(event?: APIGatewayProxyEvent): APIGatewayProxyResult {
+    return {
+      statusCode: 204,
+      headers: buildHeaders(event),
+      body: '',
+    };
+  }
+
+  /**
+   * 400 Bad Request response.
+   *
+   * @param data - Error response data
+   * @param event - API Gateway event
+   */
+  static error<T>(
+    statusCode: number,
+    body: T,
+    event?: APIGatewayProxyEvent,
+  ): APIGatewayProxyResult {
+    return this.create(statusCode, { success: false, data: body }, event);
+  }
+}

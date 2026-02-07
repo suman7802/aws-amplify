@@ -2,9 +2,19 @@ import { ZodError } from 'zod';
 import { logger } from '../logger';
 
 /**
- * Base class for all API errors.
+ * Represents a standardized API error.
+ *
+ * Used across the application to return consistent error responses
+ * with HTTP status codes and machine-readable error codes.
  */
 export class ApiError extends Error {
+  /**
+   * Creates a new ApiError instance.
+   *
+   * @param statusCode - HTTP status code (e.g. 400, 401, 500)
+   * @param message - Human-readable error message
+   * @param code - Application-specific error code
+   */
   constructor(
     public statusCode: number,
     public message: string,
@@ -16,6 +26,9 @@ export class ApiError extends Error {
     Object.setPrototypeOf(this, ApiError.prototype);
   }
 
+  /**
+   * Converts the error into a serializable JSON response.
+   */
   toJSON() {
     return {
       success: false,
@@ -29,69 +42,78 @@ export class ApiError extends Error {
 }
 
 /**
- * 400 Bad Request
+ * Factory class for creating common API errors.
+ *
+ * Provides strongly-typed helper methods and IDE autocomplete.
  */
-export class BadRequestError extends ApiError {
-  constructor(message: string = 'Bad Request', details?: unknown) {
-    super(400, message, 'BAD_REQUEST', details);
-    Object.setPrototypeOf(this, BadRequestError.prototype);
+export class Errors {
+  /**
+   * Creates a 400 Bad Request error.
+   *
+   * @param message - Description of the client error
+   * @param details - Optional validation or request details
+   */
+  static badRequest(message = 'Bad Request', details?: unknown): ApiError {
+    return new ApiError(400, message, 'BAD_REQUEST', details);
+  }
+
+  /**
+   * Creates a 401 Unauthorized error.
+   *
+   * @param message - Authentication error message
+   */
+  static unauthorized(message = 'Unauthorized'): ApiError {
+    return new ApiError(401, message, 'UNAUTHORIZED');
+  }
+
+  /**
+   * Creates a 403 Forbidden error.
+   *
+   * @param message - Authorization error message
+   */
+  static forbidden(message = 'Forbidden'): ApiError {
+    return new ApiError(403, message, 'FORBIDDEN');
+  }
+
+  /**
+   * Creates a 404 Not Found error.
+   *
+   * @param message - Resource not found message
+   */
+  static notFound(message = 'Not Found'): ApiError {
+    return new ApiError(404, message, 'NOT_FOUND');
+  }
+
+  /**
+   * Creates a 409 Conflict error.
+   *
+   * @param message - Conflict description
+   * @param details - Optional conflict metadata
+   */
+  static conflict(message = 'Conflict', details?: unknown): ApiError {
+    return new ApiError(409, message, 'CONFLICT', details);
+  }
+
+  /**
+   * Creates a 500 Internal Server Error.
+   *
+   * @param message - Server error message
+   */
+  static internal(message = 'Internal Server Error'): ApiError {
+    return new ApiError(500, message, 'INTERNAL_SERVER_ERROR');
   }
 }
 
 /**
- * 401 Unauthorized
+ * Normalizes unknown errors into ApiError instances.
+ *
+ * - Returns ApiError directly if already handled
+ * - Converts Zod validation errors into 400 responses
+ * - Converts unknown errors into 500 responses
+ *
+ * @param error - Unknown error thrown during request processing
  */
-export class UnauthorizedError extends ApiError {
-  constructor(message: string = 'Unauthorized') {
-    super(401, message, 'UNAUTHORIZED');
-    Object.setPrototypeOf(this, UnauthorizedError.prototype);
-  }
-}
-
-/**
- * 403 Forbidden
- */
-export class ForbiddenError extends ApiError {
-  constructor(message: string = 'Forbidden') {
-    super(403, message, 'FORBIDDEN');
-    Object.setPrototypeOf(this, ForbiddenError.prototype);
-  }
-}
-
-/**
- * 404 Not Found
- */
-export class NotFoundError extends ApiError {
-  constructor(message: string = 'Not Found') {
-    super(404, message, 'NOT_FOUND');
-    Object.setPrototypeOf(this, NotFoundError.prototype);
-  }
-}
-
-/**
- * 409 Conflict
- */
-export class ConflictError extends ApiError {
-  constructor(message: string = 'Conflict', details?: unknown) {
-    super(409, message, 'CONFLICT', details);
-    Object.setPrototypeOf(this, ConflictError.prototype);
-  }
-}
-
-/**
- * 500 Internal Server Error
- */
-export class InternalServerError extends ApiError {
-  constructor(message: string = 'Internal Server Error') {
-    super(500, message, 'INTERNAL_SERVER_ERROR');
-    Object.setPrototypeOf(this, InternalServerError.prototype);
-  }
-}
-
-/**
- * Processes errors into a consistent format for API responses.
- */
-export const handleError = (error: unknown) => {
+export const handleError = (error: unknown): ApiError => {
   logger.error.error('Error encountered:', { error });
 
   if (error instanceof ApiError) {
@@ -104,10 +126,12 @@ export const handleError = (error: unknown) => {
       message: issue.message,
       code: issue.code,
     }));
-    return new BadRequestError('Validation failed', details);
+
+    return Errors.badRequest('Validation failed', details);
   }
 
   const message =
     error instanceof Error ? error.message : 'An unexpected error occurred';
-  return new InternalServerError(message);
+
+  return Errors.internal(message);
 };

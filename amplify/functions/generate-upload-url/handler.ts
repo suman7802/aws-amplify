@@ -1,7 +1,7 @@
 import type { Handler } from 'aws-lambda';
 import { logger } from '../../shared/logger';
 import { apiHandler } from '../../shared/utils/apiHandler.util';
-import { createResponse } from '../../shared/utils/response.util';
+import { Response } from '../../shared/utils/response.util';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getUserInfo } from '../../shared/utils/getUserInfo.util';
@@ -85,7 +85,7 @@ export const handler: Handler = apiHandler(async (event) => {
     expiresIn: SIGNED_URL_EXPIRE_IN,
   });
 
-  return createResponse(
+  return Response.create(
     201,
     {
       key,
