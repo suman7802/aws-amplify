@@ -3,7 +3,7 @@ import { Response } from '../../shared/utils/response.util';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getUserInfo } from '../../shared/utils/getUserInfo.util';
-import { ApiError } from '../../shared/utils/errors.util';
+import { Errors } from '../../shared/utils/errors.util';
 import { apiHandler } from '../../shared/utils/apiHandler.util';
 
 const s3 = new S3Client({});
@@ -25,7 +25,7 @@ const s3 = new S3Client({});
  * - key {string} The S3 object key where the file should be uploaded
  * - uploadUrl {string} The pre-signed S3 upload URL
  *
- * @throws {ApiError}
+ * @throws {Errors}
  * Throws an error if:
  * - contentType is missing or not allowed
  * - contentLength is missing, zero, or exceeds the maximum allowed size
@@ -53,11 +53,11 @@ export const handler: Handler = apiHandler('api', async (event: APIGatewayProxyE
   const size = Number(contentLength);
 
   if (!contentType || !ALLOWED_TYPES?.includes(contentType)) {
-    throw new ApiError(400, 'Invalid media type. Only JPEG, PNG, and WebP are allowed.');
+    throw Errors.badRequest('Invalid media type. Only JPEG, PNG, and WebP are allowed.');
   }
 
   if (size === 0 || size > MAX_SIZE) {
-    throw new ApiError(400, `File size must be between 1 byte and ${MAX_SIZE / (1024 * 1024)}MB.`);
+    throw Errors.badRequest(`File size must be between 1 byte and ${MAX_SIZE / (1024 * 1024)}MB.`);
   }
 
   const extension = contentType.split('/')[1] || 'jpg';

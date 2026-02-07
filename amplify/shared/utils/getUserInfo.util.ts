@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { ApiError } from './errors.util';
+import { Errors } from './errors.util';
 
 export interface UserInfo {
   userId: string;
@@ -21,12 +21,14 @@ function parseGroups(rawGroups: any): string[] {
  * Extracts and standardizes Cognito user information from the API Gateway event.
  * * @param {APIGatewayProxyEvent} event - The Lambda proxy event from API Gateway.
  * @returns {UserInfo} The normalized user information.
- * @throws {ApiError} 401 unauthenticated if claims are missing.
+ * @throws {Errors} 401 unauthenticated if claims are missing.
  */
 export const getUserInfo = (event: APIGatewayProxyEvent): UserInfo => {
   const claims = event.requestContext.authorizer?.claims;
 
-  if (!claims || !claims.sub) throw new ApiError(401, 'unauthenticated');
+  if (!claims || !claims.sub) {
+    throw Errors.unauthorized();
+  }
 
   const rawGroups = claims['cognito:groups'];
   const groups: string[] = parseGroups(rawGroups);

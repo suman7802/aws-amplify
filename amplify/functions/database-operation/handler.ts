@@ -2,10 +2,10 @@ import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, DynamoDBDocumentC
 import type { Handler } from 'aws-lambda';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
-import { ApiError } from '../../shared/utils';
 import { DynamoPayload } from '../../shared/db/contracts.type';
 import { resolveTableName, withCreateMetadata, withUpdateMetadata } from './utils';
 import { apiHandler } from '../../shared/utils/apiHandler.util';
+import { Errors } from '../../shared/utils/errors.util';
 
 const client = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
@@ -58,6 +58,6 @@ export const handler: Handler = apiHandler('api', async (event: { payload: Dynam
     }
 
     default:
-      throw new ApiError(400, `database-operation: Unsupported action: ${action}`);
+      throw Errors.badRequest(`database-operation: Unsupported action: ${action}`);
   }
 });

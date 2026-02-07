@@ -1,5 +1,5 @@
 import { DynamoPayload } from '../../../shared/db/contracts.type';
-import { ApiError } from '../../../shared/utils/errors.util';
+import { Errors } from '../../../shared/utils/errors.util';
 
 /**
  * Resolve the physical DynamoDB table name for a logical table key.
@@ -29,7 +29,7 @@ export function resolveTableName(table: DynamoPayload['table']): string {
   const tableName = tableMap[table];
 
   if (!tableName) {
-    throw new ApiError(500, `Database table name not configured for: ${table}`);
+    throw Errors.internal(`Database table name not configured for: ${table}`);
   }
 
   return tableName;
