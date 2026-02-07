@@ -1,11 +1,11 @@
-import type { Handler } from 'aws-lambda';
+import type { APIGatewayProxyEvent, Handler } from 'aws-lambda';
 import { logger } from '../../shared/logger';
-import { apiHandler } from '../../shared/utils/apiHandler.util';
 import { Response } from '../../shared/utils/response.util';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getUserInfo } from '../../shared/utils/getUserInfo.util';
 import { ApiError } from '../../shared/utils/errors.util';
+import { apiHandler } from '../../shared/utils/apiHandler.util';
 
 const s3 = new S3Client({});
 
@@ -43,13 +43,11 @@ const s3 = new S3Client({});
  * @env SIGNED_URL_EXPIRE_IN
  * Expiration time (in seconds) for the generated pre-signed URL.
  */
-export const handler: Handler = apiHandler(async (event) => {
+export const handler: Handler = apiHandler('api', async (event: APIGatewayProxyEvent) => {
   logger.S3Bucket.info('Generating pre-signed upload URL');
 
   const MAX_SIZE = Number(process.env.MAX_SIZE);
-  const ALLOWED_TYPES = process.env.ALLOWED_TYPES?.split(',').map((origin) =>
-    origin.trim(),
-  );
+  const ALLOWED_TYPES = process.env.ALLOWED_TYPES?.split(',').map((origin) => origin.trim());
   const SIGNED_URL_EXPIRE_IN = Number(process.env.SIGNED_URL_EXPIRE_IN);
 
   const { userId } = getUserInfo(event);
@@ -58,17 +56,11 @@ export const handler: Handler = apiHandler(async (event) => {
   const size = Number(contentLength);
 
   if (!contentType || !ALLOWED_TYPES?.includes(contentType)) {
-    throw new ApiError(
-      400,
-      'Invalid media type. Only JPEG, PNG, and WebP are allowed.',
-    );
+    throw new ApiError(400, 'Invalid media type. Only JPEG, PNG, and WebP are allowed.');
   }
 
   if (size === 0 || size > MAX_SIZE) {
-    throw new ApiError(
-      400,
-      `File size must be between 1 byte and ${MAX_SIZE / (1024 * 1024)}MB.`,
-    );
+    throw new ApiError(400, `File size must be between 1 byte and ${MAX_SIZE / (1024 * 1024)}MB.`);
   }
 
   const extension = contentType.split('/')[1] || 'jpg';

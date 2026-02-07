@@ -1,6 +1,6 @@
 import type { PreSignUpTriggerEvent } from 'aws-lambda';
 import { createUserSchema } from '../../shared/schema/user.schema';
-import { authHandler } from '../../shared/utils';
+import { apiHandler } from '../../shared/utils/apiHandler.util';
 
 /**
  * Pre-Signup Trigger
@@ -9,7 +9,7 @@ import { authHandler } from '../../shared/utils';
  * - Enforces corporate email domain
  * - Auto-confirms trusted users
  */
-export const handler = authHandler<PreSignUpTriggerEvent>(async (event) => {
+export const handler = apiHandler<PreSignUpTriggerEvent>('auth', async (event: PreSignUpTriggerEvent) => {
   const attrs = event.request.userAttributes;
 
   createUserSchema.parse({

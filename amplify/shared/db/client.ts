@@ -7,18 +7,16 @@ const lambda = new LambdaClient({});
 /**
  * Sends a payload to the DB Gateway Lambda and returns the response.
  * All upstream functions call this wrapper, never InvokeCommand directly.
+ *
+ * @param payload - The payload to send to the DB Gateway Lambda.
+ * @returns The response from the DB Gateway Lambda.
  */
 export async function dbClient(payload: DynamoPayload) {
-  const dbLambdaName =
-    process.env.DB_LAMBDA_NAME ||
-    'amplify-todo-sumansharma--databaseoperationlambda1-vFZ9kzKAXU7C'; // useing this for now (debug purpose)
-
-  logger.database.info(`DB Lambda Name ${dbLambdaName}`);
   logger.database.info(`DB Client called with payload ${payload}`);
 
   const response = await lambda.send(
     new InvokeCommand({
-      FunctionName: dbLambdaName,
+      FunctionName: process.env.DB_LAMBDA_NAME!,
       Payload: Buffer.from(JSON.stringify({ payload })),
     }),
   );

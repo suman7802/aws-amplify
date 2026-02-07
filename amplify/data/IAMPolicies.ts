@@ -10,8 +10,7 @@ import { AppBackend } from '../shared/types/backend.type';
 export function attachTablePolicies(backend: AppBackend) {
   const todoTable = backend.data.resources.tables['Todo'] as dynamodb.Table;
   const userTable = backend.data.resources.tables['User'] as dynamodb.Table;
-  const dbLambda = backend.databaseOperation.resources
-    .lambda as lambda.Function;
+  const dbLambda = backend.databaseOperation.resources.lambda as lambda.Function;
 
   const tableAccessStatement = new iam.PolicyStatement({
     actions: [

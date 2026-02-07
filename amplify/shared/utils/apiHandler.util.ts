@@ -1,41 +1,44 @@
-import type {
-  APIGatewayProxyEvent,
-  APIGatewayProxyResult,
-  Context,
-} from 'aws-lambda';
+import type { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { handleError } from './errors.util';
 import { Response } from './response.util';
+import { logger } from '../logger';
 
-type HandlerFunction<T> = (
-  event: APIGatewayProxyEvent,
-  context: Context,
-) => Promise<T>;
+type HandlerMode = 'api' | 'auth';
+type AuthHandler<TEvent, TResult = TEvent> = (event: TEvent, context: Context) => Promise<TResult>;
+type ApiHandler<T> = (event: APIGatewayProxyEvent, context: Context) => Promise<T | APIGatewayProxyResult>;
 
 /**
- * Standardizes API responses and error handling for Lambda functions.
+ * Unified Lambda handler wrapper.
  */
-export const apiHandler = <T>(handler: HandlerFunction<T>) => {
-  return async (
-    event: APIGatewayProxyEvent,
-    context: Context,
-  ): Promise<APIGatewayProxyResult> => {
+export const apiHandler = <TEvent, TResult = TEvent>(mode: HandlerMode, handler: ApiHandler<TResult> | AuthHandler<TEvent, TResult>) => {
+  return async (event: TEvent, context: Context): Promise<TResult | APIGatewayProxyResult> => {
     try {
-      const result = await handler(event, context);
+      logger.error.info('Lambda event received', { mode, event });
 
-      // If already a proxy result, return it
-      if (
-        result &&
-        typeof result === 'object' &&
-        'statusCode' in result &&
-        'body' in result
-      ) {
-        return result as APIGatewayProxyResult;
+      const result = await handler(event as any, context);
+
+      // API GATEWAY MODE
+      if (mode === 'api') {
+        // If handler already returned a proxy result, pass through
+        if (result && typeof result === 'object' && 'statusCode' in result && 'body' in result) {
+          return result as APIGatewayProxyResult;
+        }
+
+        return Response.success(result as TResult, event as APIGatewayProxyEvent);
       }
 
-      return Response.success(result, event);
+      // COGNITO AUTH MODE
+      return result as TResult;
     } catch (error) {
       const apiError = handleError(error);
-      return Response.error(apiError.statusCode, apiError.toJSON(), event);
+
+      // API GATEWAY ERROR
+      if (mode === 'api') {
+        return Response.error(apiError.statusCode, apiError.toJSON(), event as APIGatewayProxyEvent);
+      }
+
+      // Cognito only respects the error message
+      throw new Error(apiError.message);
     }
   };
 };

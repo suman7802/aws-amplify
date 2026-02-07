@@ -1,9 +1,9 @@
-import type { Handler } from 'aws-lambda';
+import type { APIGatewayProxyEvent, Handler } from 'aws-lambda';
 import { logger } from '../../shared/logger';
-import { apiHandler } from '../../shared/utils/apiHandler.util';
 import { Response } from '../../shared/utils/response.util';
+import { apiHandler } from '../../shared/utils/apiHandler.util';
 
-export const handler: Handler = apiHandler(async (event, context) => {
+export const handler: Handler = apiHandler('api', async (event: APIGatewayProxyEvent) => {
   logger.crud.info('Hello World, get todo');
 
   const mockTodo = [

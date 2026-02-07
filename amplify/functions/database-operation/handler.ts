@@ -1,24 +1,15 @@
-import {
-  GetCommand,
-  PutCommand,
-  UpdateCommand,
-  DeleteCommand,
-  DynamoDBDocumentClient,
-} from '@aws-sdk/lib-dynamodb';
+import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import type { Handler } from 'aws-lambda';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 import { ApiError } from '../../shared/utils';
 import { DynamoPayload } from '../../shared/db/contracts.type';
-import {
-  resolveTableName,
-  withCreateMetadata,
-  withUpdateMetadata,
-} from './utils';
+import { resolveTableName, withCreateMetadata, withUpdateMetadata } from './utils';
+import { apiHandler } from '../../shared/utils/apiHandler.util';
 
 const client = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
-export const handler: Handler = async (event: { payload: DynamoPayload }) => {
+export const handler: Handler = apiHandler('api', async (event: { payload: DynamoPayload }) => {
   const { action, table: PTable } = event.payload;
   const table = resolveTableName(PTable);
 
@@ -48,8 +39,7 @@ export const handler: Handler = async (event: { payload: DynamoPayload }) => {
       const ExpressionAttributeValues: Record<string, any> = {};
 
       for (const k in itemWithMetadata) {
-        ExpressionAttributeValues[`:${k}`] =
-          itemWithMetadata[k as keyof typeof itemWithMetadata];
+        ExpressionAttributeValues[`:${k}`] = itemWithMetadata[k as keyof typeof itemWithMetadata];
       }
 
       return client.send(
@@ -68,9 +58,6 @@ export const handler: Handler = async (event: { payload: DynamoPayload }) => {
     }
 
     default:
-      throw new ApiError(
-        400,
-        `database-operation: Unsupported action: ${action}`,
-      );
+      throw new ApiError(400, `database-operation: Unsupported action: ${action}`);
   }
-};
+});

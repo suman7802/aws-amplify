@@ -8,16 +8,11 @@ import { AppBackend } from '../shared/types/backend.type';
  * @param backend - The initialized Amplify Gen 2 backend instance.
  */
 export function attachFunctionPolicies(backend: AppBackend) {
-  const databaseOperationLambda = backend.databaseOperation.resources
-    .lambda as lambda.Function;
+  const databaseOperationLambda = backend.databaseOperation.resources.lambda as lambda.Function;
 
-  const crudLambdas = [
-    backend.createTodo,
-    backend.updateTodo,
-    backend.deleteTodo,
-    backend.getTodo,
-    backend.postConfirmation,
-  ].map((fn) => fn.resources.lambda as lambda.Function);
+  const crudLambdas = [backend.createTodo, backend.updateTodo, backend.deleteTodo, backend.getTodo, backend.postConfirmation].map(
+    (fn) => fn.resources.lambda as lambda.Function,
+  );
 
   // Define the policy statement for invoking the databaseOperation lambda
   const invokeStatement = new iam.PolicyStatement({

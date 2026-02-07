@@ -28,9 +28,7 @@ const resolveOrigin = (event?: APIGatewayProxyEvent): string => {
 /**
  * Builds standardized headers including CORS.
  */
-const buildHeaders = (
-  event?: APIGatewayProxyEvent,
-): Record<string, string> => ({
+const buildHeaders = (event?: APIGatewayProxyEvent): Record<string, string> => ({
   ...BASE_HEADERS,
   'Access-Control-Allow-Origin': resolveOrigin(event),
 });
@@ -49,11 +47,7 @@ export class Response {
    * @param body - Response payload
    * @param event - API Gateway event (used for CORS resolution)
    */
-  static create<T>(
-    statusCode: number,
-    body: T,
-    event?: APIGatewayProxyEvent,
-  ): APIGatewayProxyResult {
+  static create<T>(statusCode: number, body: T, event?: APIGatewayProxyEvent): APIGatewayProxyResult {
     return {
       statusCode,
       headers: buildHeaders(event),
@@ -67,10 +61,7 @@ export class Response {
    * @param data - Successful response data
    * @param event - API Gateway event
    */
-  static success<T>(
-    data: T,
-    event?: APIGatewayProxyEvent,
-  ): APIGatewayProxyResult {
+  static success<T>(data: T, event?: APIGatewayProxyEvent): APIGatewayProxyResult {
     return this.create(200, { success: true, data }, event);
   }
 
@@ -80,10 +71,7 @@ export class Response {
    * @param data - Created resource data
    * @param event - API Gateway event
    */
-  static created<T>(
-    data: T,
-    event?: APIGatewayProxyEvent,
-  ): APIGatewayProxyResult {
+  static created<T>(data: T, event?: APIGatewayProxyEvent): APIGatewayProxyResult {
     return this.create(201, { success: true, data }, event);
   }
 
@@ -106,11 +94,7 @@ export class Response {
    * @param data - Error response data
    * @param event - API Gateway event
    */
-  static error<T>(
-    statusCode: number,
-    body: T,
-    event?: APIGatewayProxyEvent,
-  ): APIGatewayProxyResult {
+  static error<T>(statusCode: number, body: T, event?: APIGatewayProxyEvent): APIGatewayProxyResult {
     return this.create(statusCode, { success: false, data: body }, event);
   }
 }

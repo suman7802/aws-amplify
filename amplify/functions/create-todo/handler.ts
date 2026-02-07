@@ -1,12 +1,12 @@
-import type { Handler } from 'aws-lambda';
+import type { APIGatewayProxyEvent, Handler } from 'aws-lambda';
 import { logger } from '../../shared/logger';
 import { dbClient } from '../../shared/db/client';
-import { apiHandler } from '../../shared/utils/apiHandler.util';
 import { validate } from '../../shared/utils';
 import { createTodoSchema } from '../../shared/schema/todo.schema';
 import { Response } from '../../shared/utils/response.util';
+import { apiHandler } from '../../shared/utils/apiHandler.util';
 
-export const handler: Handler = apiHandler(async (event) => {
+export const handler: Handler = apiHandler('api', async (event: APIGatewayProxyEvent) => {
   logger.crud.info('create todo fn event', { event });
   const body = validate.body(event.body, createTodoSchema);
 
@@ -19,8 +19,5 @@ export const handler: Handler = apiHandler(async (event) => {
     },
   });
 
-  return Response.created(
-    { message: 'Todo created successfully', result },
-    event,
-  );
+  return Response.created({ message: 'Todo created successfully', result }, event);
 });

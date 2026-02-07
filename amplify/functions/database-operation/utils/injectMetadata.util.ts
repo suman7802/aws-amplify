@@ -23,9 +23,7 @@ export function withCreateMetadata<T extends Record<string, any>>(item: T): T {
 /**
  * Inject metadata for an UPDATE operation.
  */
-export function withUpdateMetadata<T extends Record<string, any>>(
-  values: T,
-): T {
+export function withUpdateMetadata<T extends Record<string, any>>(values: T): T {
   const timestamp = now();
 
   return {

@@ -130,8 +130,7 @@ export const handleError = (error: unknown): ApiError => {
     return Errors.badRequest('Validation failed', details);
   }
 
-  const message =
-    error instanceof Error ? error.message : 'An unexpected error occurred';
+  const message = error instanceof Error ? error.message : 'An unexpected error occurred';
 
   return Errors.internal(message);
 };
