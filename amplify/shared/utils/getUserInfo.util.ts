@@ -3,7 +3,7 @@ import { Errors } from './errors.util';
 
 export interface UserInfo {
   userId: string;
-  username: string;
+  email: string;
   groups: string[];
   isAuthenticated: boolean;
 }
@@ -35,7 +35,7 @@ export const getUserInfo = (event: APIGatewayProxyEvent): UserInfo => {
 
   return {
     userId: claims.sub,
-    username: claims['cognito:username'] || claims.username || 'unknown',
+    email: claims['cognito:username'] || claims.username || 'unknown',
     groups,
     isAuthenticated: true,
   };
