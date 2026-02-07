@@ -1,5 +1,4 @@
 import type { APIGatewayProxyEvent, Handler } from 'aws-lambda';
-import { logger } from '../../shared/logger';
 import { Response } from '../../shared/utils/response.util';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -44,8 +43,6 @@ const s3 = new S3Client({});
  * Expiration time (in seconds) for the generated pre-signed URL.
  */
 export const handler: Handler = apiHandler('api', async (event: APIGatewayProxyEvent) => {
-  logger.S3Bucket.info('Generating pre-signed upload URL');
-
   const MAX_SIZE = Number(process.env.MAX_SIZE);
   const ALLOWED_TYPES = process.env.ALLOWED_TYPES?.split(',').map((origin) => origin.trim());
   const SIGNED_URL_EXPIRE_IN = Number(process.env.SIGNED_URL_EXPIRE_IN);

@@ -1,11 +1,14 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
+import { Logger } from '@aws-lambda-powertools/logger';
+
 import { handleError } from './errors.util';
 import { Response } from './response.util';
-import { logger } from '../logger';
 
 type HandlerMode = 'api' | 'auth';
 type AuthHandler<TEvent, TResult = TEvent> = (event: TEvent, context: Context) => Promise<TResult>;
 type ApiHandler<T> = (event: APIGatewayProxyEvent, context: Context) => Promise<T | APIGatewayProxyResult>;
+
+const globalLog = new Logger({ serviceName: 'crud' });
 
 /**
  * Unified Lambda handler wrapper.
@@ -13,8 +16,7 @@ type ApiHandler<T> = (event: APIGatewayProxyEvent, context: Context) => Promise<
 export const apiHandler = <TEvent, TResult = TEvent>(mode: HandlerMode, handler: ApiHandler<TResult> | AuthHandler<TEvent, TResult>) => {
   return async (event: TEvent, context: Context): Promise<TResult | APIGatewayProxyResult> => {
     try {
-      logger.error.info('Lambda event received', { mode, event });
-
+      globalLog.info('Lambda event received', { mode, event });
       const result = await handler(event as any, context);
 
       // API GATEWAY MODE
@@ -30,6 +32,7 @@ export const apiHandler = <TEvent, TResult = TEvent>(mode: HandlerMode, handler:
       // COGNITO AUTH MODE
       return result as TResult;
     } catch (error) {
+      globalLog.error('Lambda error', { error });
       const apiError = handleError(error);
 
       // API GATEWAY ERROR
@@ -37,7 +40,7 @@ export const apiHandler = <TEvent, TResult = TEvent>(mode: HandlerMode, handler:
         return Response.error(apiError.statusCode, apiError.toJSON(), event as APIGatewayProxyEvent);
       }
 
-      // Cognito only respects the error message
+      // COGNITO AUTH MODE
       throw new Error(apiError.message);
     }
   };

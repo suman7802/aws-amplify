@@ -1,5 +1,4 @@
 import { ZodError } from 'zod';
-import { logger } from '../logger';
 
 /**
  * Represents a standardized API error.
@@ -14,6 +13,7 @@ export class ApiError extends Error {
    * @param statusCode - HTTP status code (e.g. 400, 401, 500)
    * @param message - Human-readable error message
    * @param code - Application-specific error code
+   * @param details - Optional validation or request details
    */
   constructor(
     public statusCode: number,
@@ -99,8 +99,8 @@ export class Errors {
    *
    * @param message - Server error message
    */
-  static internal(message = 'Internal Server Error'): ApiError {
-    return new ApiError(500, message, 'INTERNAL_SERVER_ERROR');
+  static internal(message = 'Internal Server Error', details?: unknown): ApiError {
+    return new ApiError(500, message, 'INTERNAL_SERVER_ERROR', details);
   }
 }
 
@@ -114,8 +114,6 @@ export class Errors {
  * @param error - Unknown error thrown during request processing
  */
 export const handleError = (error: unknown): ApiError => {
-  logger.error.error('Error encountered:', { error });
-
   if (error instanceof ApiError) {
     return error;
   }
@@ -132,5 +130,5 @@ export const handleError = (error: unknown): ApiError => {
 
   const message = error instanceof Error ? error.message : 'An unexpected error occurred';
 
-  return Errors.internal(message);
+  return Errors.internal(message, error);
 };

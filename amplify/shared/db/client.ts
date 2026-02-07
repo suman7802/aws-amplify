@@ -1,6 +1,5 @@
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { DynamoPayload } from './contracts.type';
-import { logger } from '../logger';
 
 const lambda = new LambdaClient({});
 
@@ -12,8 +11,6 @@ const lambda = new LambdaClient({});
  * @returns The response from the DB Gateway Lambda.
  */
 export async function dbClient(payload: DynamoPayload) {
-  logger.database.info(`DB Client called with payload ${payload}`);
-
   const response = await lambda.send(
     new InvokeCommand({
       FunctionName: process.env.DB_LAMBDA_NAME!,
